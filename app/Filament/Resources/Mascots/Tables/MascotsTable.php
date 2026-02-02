@@ -3,9 +3,13 @@
 namespace App\Filament\Resources\Mascots\Tables;
 
 use App\Models\User;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Schemas\Components\Group;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -57,7 +61,12 @@ class MascotsTable
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                // Grouping multiple actions in the recordActions causes issues --- IGNORE ---
+                ActionGroup::make([
+                    EditAction::make(),
+                    DeleteAction::make(),
+                    ViewAction::make(),
+                ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

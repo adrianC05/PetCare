@@ -47,4 +47,10 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // Una veterinario puede tener muchas citas
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class, 'veterinarian_id');
+    }
 }

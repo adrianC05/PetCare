@@ -5,7 +5,9 @@ namespace App\Filament\Resources\Mascots;
 use App\Filament\Resources\Mascots\Pages\CreateMascot;
 use App\Filament\Resources\Mascots\Pages\EditMascot;
 use App\Filament\Resources\Mascots\Pages\ListMascots;
+use App\Filament\Resources\Mascots\Pages\ViewMascot;
 use App\Filament\Resources\Mascots\Schemas\MascotForm;
+use App\Filament\Resources\Mascots\Schemas\MascotInfolist;
 use App\Filament\Resources\Mascots\Tables\MascotsTable;
 use App\Models\Mascot;
 use BackedEnum;
@@ -27,6 +29,11 @@ class MascotResource extends Resource
         return MascotForm::configure($schema);
     }
 
+    public static function infolist(Schema $schema): Schema
+    {
+        return MascotInfolist::configure($schema);
+    }
+
     public static function table(Table $table): Table
     {
         return MascotsTable::configure($table);
@@ -44,6 +51,7 @@ class MascotResource extends Resource
         return [
             'index' => ListMascots::route('/'),
             'create' => CreateMascot::route('/create'),
+            'view' => ViewMascot::route('/{record}'),
             'edit' => EditMascot::route('/{record}/edit'),
         ];
     }
