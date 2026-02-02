@@ -34,6 +34,7 @@ class MascotForm
                     ->label('Fecha de Nacimiento'),
                 Select::make('owner_id')
                     ->label('Dueño')
+                    ->searchable()
                     ->options(fn () => \App\Models\User::all()->pluck('name', 'id'))
                     ->required(),
                 FileUpload::make('photo_path')
