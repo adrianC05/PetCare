@@ -15,6 +15,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Filament\Tables\Actions\Action;
 
 class MascotResource extends Resource
 {
@@ -23,6 +24,9 @@ class MascotResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'Mascot';
+    protected static ?string $navigationLabel = 'Mascotas';
+    protected static ?string $modelLabel = 'Mascota';
+    protected static ?string $pluralModelLabel = 'Mascotas';
 
     public static function form(Schema $schema): Schema
     {
@@ -43,6 +47,7 @@ class MascotResource extends Resource
     {
         return [
             //
+            RelationManagers\HistorialMedicosRelationManager::class,
         ];
     }
 

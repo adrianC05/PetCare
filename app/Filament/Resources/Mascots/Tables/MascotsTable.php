@@ -2,17 +2,12 @@
 
 namespace App\Filament\Resources\Mascots\Tables;
 
-use App\Models\User;
-use Filament\Actions\ActionGroup;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
-use Filament\Schemas\Components\Group;
+use Filament\Tables\Table;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
+
+// EN FILAMENT V2 NO NECESITAMOS IMPORTAR ACCIONES SI USAMOS LAS DE DEFECTO
+// O LAS LLAMAMOS DIRECTAMENTE.
 
 class MascotsTable
 {
@@ -22,56 +17,63 @@ class MascotsTable
             ->columns([
                 ImageColumn::make('photo_path')
                     ->label('Foto')
-                    ->imageHeight(40)
-                    ->circular(),
+                    ->rounded(), // En V2 se usa rounded() en vez de circular() a veces, pero probemos.
+
                 TextColumn::make('name')
                     ->label('Nombre')
                     ->searchable(),
+
                 TextColumn::make('species')
                     ->label('Especie')
                     ->searchable(),
-                TextColumn::make('breed')
-                    ->label('Raza')
-                    ->searchable(),
-                TextColumn::make('weight')
-                    ->label('Peso (lb)')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('birthdate')
-                    ->label('Fecha de Nacimiento')
-                    ->date()
-                    ->sortable(),
+
                 TextColumn::make('owner.name')
                     ->label('Dueño')
-                    ->description(fn ($record): string => $record->owner?->lastname ?? '')
-                    ->extraAttributes(attributes: ['style' => 'row-gap: 0 !important'])
+                    ->description(fn($record): string => $record->owner?->lastname ?? '')
                     ->sortable(),
+
+                // --- SOLUCIÓN WHATSAPP PARA FILAMENT V2 ---
+                TextColumn::make('whatsapp_link')
+                    ->label('Contacto')
+                    ->default('WhatsApp 💬')
+                    ->color('success')
+                    // EL TRUCO V2: El 'true' al final abre en nueva pestaña
+                    ->url(fn($record) => self::getWhatsappUrl($record), true),
+
                 TextColumn::make('created_at')
                     ->label('Creado')
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->label('Actualizado')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
             ])
             ->filters([
                 //
             ])
-            ->recordActions([
-                // Grouping multiple actions in the recordActions causes issues --- IGNORE ---
-                ActionGroup::make([
-                    EditAction::make(),
-                    DeleteAction::make(),
-                    ViewAction::make(),
-                ]),
+            // DEJAMOS ACCIONES VACÍAS UN MOMENTO PARA QUE CARGUE LA TABLA
+            // Si esto funciona, luego agregamos Editar/Borrar
+            ->actions([
+                //
             ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+            ->bulkActions([
+                //
             ]);
+    }
+
+    // --- LÓGICA WHATSAPP (IGUAL QUE ANTES) ---
+    public static function getWhatsappUrl($record): string
+    {
+        if (!$record->owner || empty($record->owner->phone)) {
+            return '#';
+        }
+
+        $numero = $record->owner->phone;
+        $numeroLimpio = preg_replace('/[^0-9]/', '', $numero);
+
+        if (str_starts_with($numeroLimpio, '0')) {
+            $numeroLimpio = '593' . substr($numeroLimpio, 1);
+        }
+
+        $mensaje = "Hola {$record->owner->name}, le escribimos de PetCare sobre su mascota {$record->name}.";
+
+        return "https://wa.me/{$numeroLimpio}?text=" . urlencode($mensaje);
     }
 }
