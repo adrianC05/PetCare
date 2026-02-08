@@ -4,41 +4,48 @@ namespace App\Filament\Widgets;
 
 use App\Models\Mascot;
 use App\Models\User;
+use App\Models\Appointment; // Importamos el modelo de citas
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Carbon\Carbon;
 
 class StatsOverview extends BaseWidget
 {
-    // Actualizar datos cada 15 segundos automáticamente
     protected ?string $pollingInterval = '15s';
 
     protected function getStats(): array
     {
+        // Lógica para obtener el crecimiento de citas en los últimos 7 días
+        $appointmentsChart = Appointment::selectRaw('count(*) as count')
+            ->where('created_at', '>=', now()->subDays(7))
+            ->groupByRaw('date(created_at)')
+            ->pluck('count')
+            ->toArray();
+
+        // Lógica para contar citas de HOY
+        $citasHoy = Appointment::whereDate('appointment_date', Carbon::today())->count();
+
         return [
-            // TARJETA 1: PACIENTES (Verde Esperanza)
-            Stat::make('Pacientes Activos', Mascot::count())
-                ->description('Total de mascotas registradas')
-                ->descriptionIcon('heroicon-m-heart') // Corazón lleno
+            // TARJETA 1: MASCOTAS
+            Stat::make('Pacientes Registrados', Mascot::count())
+                ->description('Mascotas en el sistema')
+                ->descriptionIcon('heroicon-m-heart')
                 ->color('success')
-                ->chart([7, 2, 10, 3, 15, 4, 17]) // Gráfico ascendente
-                ->extraAttributes([
-                    'class' => 'cursor-pointer hover:shadow-lg transition-all',
-                ]),
+                ->chart([2, 4, 6, 8, 10, 12, 14]), // Simulación de crecimiento
 
-            // TARJETA 2: DUEÑOS (Naranja Corporativo)
-            Stat::make('Comunidad PetCare', User::count())
-                ->description('Dueños confiando en nosotros')
-                ->descriptionIcon('heroicon-m-user-group')
+            // TARJETA 2: DUEÑOS/USUARIOS
+            Stat::make('Clientes Totales', User::count())
+                ->description('Dueños de mascotas')
+                ->descriptionIcon('heroicon-m-users')
                 ->color('warning')
-                ->chart([3, 5, 3, 8, 2, 10, 6]),
+                ->chart([10, 8, 12, 5, 15, 7, 20]),
 
-            // TARJETA 3: CITAS (Azul Clínico)
-            // Nota: Como aún no tenemos citas reales, dejamos '0' pero se ve bonito.
-            Stat::make('Citas Programadas', '0')
-                ->description('Agenda del día de hoy')
+            // TARJETA 3: CITAS REALES
+            Stat::make('Citas para Hoy', $citasHoy)
+                ->description($citasHoy > 0 ? 'Tienes trabajo hoy 🐾' : 'Día tranquilo')
                 ->descriptionIcon('heroicon-m-calendar-days')
-                ->color('info')
-                ->chart([2, 2, 2, 2, 2, 2, 2]),
+                ->color($citasHoy > 0 ? 'info' : 'gray')
+                ->chart(count($appointmentsChart) > 0 ? $appointmentsChart : [0, 0, 0, 0, 0, 0, 0]),
         ];
     }
 }
