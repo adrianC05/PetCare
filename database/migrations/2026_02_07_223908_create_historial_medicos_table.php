@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
 
             // Relación con la mascota
-            $table->foreignId('mascota_id')->constrained('mascotas')->onDelete('cascade');
+            $table->foreignId('mascota_id')->constrained('mascots')->onDelete('cascade');
 
             // Tipo de evento
             $table->string('tipo'); // Vacuna, Consulta, Desparasitación, Cirugía
