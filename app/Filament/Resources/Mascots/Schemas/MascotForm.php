@@ -21,7 +21,7 @@ class MascotForm
                     ->label('Especie')
                     ->options([
                         'dog' => 'Perro',
-                        'cat' => 'Gato'
+                        'cat' => 'Gato',
                     ])
                     ->required(),
                 TextInput::make('breed')
@@ -34,8 +34,9 @@ class MascotForm
                     ->label('Fecha de Nacimiento'),
                 Select::make('owner_id')
                     ->label('Dueño')
+                    ->relationship('owner', 'name')
                     ->searchable()
-                    ->options(fn () => \App\Models\User::all()->pluck('name', 'id'))
+                    ->preload()
                     ->required(),
                 FileUpload::make('photo_path')
                     ->label('Foto de la Mascota')

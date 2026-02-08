@@ -22,4 +22,10 @@ class Mascot extends Model
     {
         return $this->belongsTo(User::class, 'owner_id');
     }
+
+    public function historialMedicos()
+    {
+        // Asegúrate de importar el modelo HistorialMedico arriba o usar la ruta completa
+        return $this->hasMany(\App\Models\HistorialMedico::class, 'mascota_id');
+    }
 }
