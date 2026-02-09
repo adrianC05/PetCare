@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Mascots;
 use App\Filament\Resources\Mascots\Pages\CreateMascot;
 use App\Filament\Resources\Mascots\Pages\EditMascot;
 use App\Filament\Resources\Mascots\Pages\ListMascots;
+use App\Filament\Resources\Mascots\Pages\ManageHistorial;
 use App\Filament\Resources\Mascots\Pages\ViewMascot;
 use App\Filament\Resources\Mascots\Schemas\MascotForm;
 use App\Filament\Resources\Mascots\Schemas\MascotInfolist;
@@ -22,6 +23,10 @@ class MascotResource extends Resource
     protected static ?string $model = Mascot::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+
+    protected static string | \UnitEnum | null $navigationGroup = 'Gestión Clínica';
+
+    protected static ?int $navigationSort = 20;
 
     protected static ?string $recordTitleAttribute = 'name';
     protected static ?string $navigationLabel = 'Mascotas';

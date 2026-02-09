@@ -20,7 +20,13 @@ class StaffResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'User';
+    protected static string | \UnitEnum | null $navigationGroup = 'Administración';
+    protected static ?int $navigationSort = 10;
+
+    protected static ?string $recordTitleAttribute = 'name';
+    protected static ?string $navigationLabel = 'Personal';
+    protected static ?string $modelLabel = 'Personal';
+    protected static ?string $pluralModelLabel = 'Personal';
 
     public static function form(Schema $schema): Schema
     {

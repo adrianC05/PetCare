@@ -26,6 +26,9 @@ class AppointmentResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Citas';
 
+    protected static \UnitEnum|string|null $navigationGroup = 'Gestión Clínica';
+    protected static ?int $navigationSort = 1;
+
     public static function form(Schema $schema): Schema
     {
         return AppointmentForm::configure($schema);

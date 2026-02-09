@@ -15,6 +15,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use App\Filament\Resources\Owners\RelationManagers\MascotsRelationManager;
 
 class OwnerResource extends Resource
 {
@@ -23,6 +24,9 @@ class OwnerResource extends Resource
     protected static ?string $model = Owner::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+
+    protected static string | \UnitEnum | null $navigationGroup = 'Gestión Clínica';
+    protected static ?int $navigationSort = 30;
 
     protected static ?string $recordTitleAttribute = 'name';
     protected static ?string $navigationLabel = 'Dueños';
@@ -47,7 +51,7 @@ class OwnerResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            MascotsRelationManager::class,
         ];
     }
 
@@ -55,9 +59,9 @@ class OwnerResource extends Resource
     {
         return [
             'index' => ListOwners::route('/'),
-            //'create' => CreateOwner::route('/create'),
-            //'view' => ViewOwner::route('/{record}'),
-            //'edit' => EditOwner::route('/{record}/edit'),
+            'create' => CreateOwner::route('/create'),
+            'view' => ViewOwner::route('/{record}'),
+            'edit' => EditOwner::route('/{record}/edit'),
         ];
     }
 }

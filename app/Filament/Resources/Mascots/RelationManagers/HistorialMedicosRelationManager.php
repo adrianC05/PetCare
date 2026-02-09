@@ -2,13 +2,10 @@
 
 namespace App\Filament\Resources\Mascots\RelationManagers;
 
-use Filament\Actions\AssociateAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\DissociateAction;
-use Filament\Actions\DissociateBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
@@ -19,10 +16,12 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class HistorialMedicosRelationManager extends RelationManager
 {
-    protected static string $relationship = 'historialMedicos';
+    protected static string $relationship = 'historialMedicos'; // Asegúrate que este método exista en el modelo Mascot
 
     protected static ?string $title = 'Historial Médico';
     protected static ?string $modelLabel = 'Evento';
@@ -41,9 +40,41 @@ class HistorialMedicosRelationManager extends RelationManager
                 ])
                 ->required(),
 
+        Select::make('appointment_id')
+            ->label('Cita Relacionada')
+            ->relationship(
+                name: 'appointment',
+                titleAttribute: null, 
+                modifyQueryUsing: function (Builder $query, RelationManager $livewire, ?Model $record) {
+                    // 1. Filtrar por mascota (como ya teníamos)
+                    $query->where('mascot_id', $livewire->getOwnerRecord()->id);
+
+                    // 2. Filtrar citas que YA tienen historial
+                    $query->where(function($q) use ($record) {
+                        // Condición A: Que NO tenga historial médico
+                        $q->whereDoesntHave('medicalRecord'); 
+
+                        // Condición B (Solo al editar): 
+                        // Si estamos editando un historial existente ($record), 
+                        // debemos permitir que aparezca SU propia cita ($record->appointment_id)
+                        // o de lo contrario el campo saldrá vacío al editar.
+                        if ($record && $record->appointment_id) {
+                            $q->orWhere('id', $record->appointment_id);
+                        }
+                    });
+                    
+                    return $query;
+                }
+            )
+            ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->reason} - {$record->appointment_date->format('d/m/Y H:i')}")
+            ->searchable()
+            ->preload()
+            ->placeholder('Selecciona una cita (opcional)'),
+
             DatePicker::make('fecha')
                 ->label('Fecha')
-                ->required(),
+                ->required()
+                ->default(now()), // Buen detalle para UX
 
             TextInput::make('peso')
                 ->label('Peso (lb)')
@@ -79,6 +110,7 @@ class HistorialMedicosRelationManager extends RelationManager
                         'Cirugía' => 'danger',
                         'Consulta' => 'info',
                         'Desparasitación' => 'warning',
+                        'Examen' => 'gray', // Agregado color para Examen
                         default => 'gray',
                     }),
 
@@ -92,17 +124,22 @@ class HistorialMedicosRelationManager extends RelationManager
                     ->suffix(' lb'),
             ])
             ->headerActions([
-                CreateAction::make()->label('Agregar Evento'),
-                AssociateAction::make(),
+                // SOLO CreateAction. Quitamos AssociateAction porque no vamos a traer historiales de otros perros.
+                CreateAction::make()
+                    ->label('Agregar Evento')
+                    ->mutateFormDataUsing(function (array $data): array {
+                        // Aquí podrías forzar datos extra si fuera necesario
+                        // pero Filament ya asigna mascot_id automáticamente
+                        return $data;
+                    }),
             ])
             ->recordActions([
                 EditAction::make(),
-                DissociateAction::make(),
+                // Quitamos DissociateAction. Si se equivocan, deben borrarlo.
                 DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DissociateBulkAction::make(),
                     DeleteBulkAction::make(),
                 ]),
             ])

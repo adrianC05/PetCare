@@ -13,6 +13,7 @@ class Mascot extends Model
         'weight',
         'birthdate',
         'sex',
+        'gender',
         'owner_id',
         'photo_path',
     ];

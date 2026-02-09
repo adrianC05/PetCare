@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
@@ -53,5 +54,10 @@ class User extends Authenticatable
     public function appointments()
     {
         return $this->hasMany(Appointment::class, 'veterinarian_id');
+    }
+
+    public function mascots(): HasMany
+    {
+        return $this->hasMany(Mascot::class, 'owner_id');
     }
 }

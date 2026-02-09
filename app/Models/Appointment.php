@@ -34,4 +34,10 @@ class Appointment extends Model
     {
         return $this->belongsTo(User::class, 'veterinarian_id');
     }
+
+    public function medicalRecord()
+    {
+        // HasOne porque una cita solo genera UN historial
+        return $this->hasOne(HistorialMedico::class); 
+    }
 }
