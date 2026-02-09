@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('historial_medicos', function (Blueprint $table) {
             $table->id();
 
-            // Relación con la mascota
+            // Relación con la mascota y la cita (opcional)
             $table->foreignId('mascota_id')->constrained('mascots')->onDelete('cascade');
+            $table->foreignId('appointment_id')->nullable()->constrained()->nullOnDelete();
 
             // Tipo de evento
             $table->string('tipo'); // Vacuna, Consulta, Desparasitación, Cirugía

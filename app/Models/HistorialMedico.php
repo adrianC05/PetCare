@@ -9,6 +9,7 @@ class HistorialMedico extends Model
 {
     protected $fillable = [
         'mascota_id',
+        'appointment_id',
         'tipo',
         'descripcion',
         'peso',
@@ -25,5 +26,10 @@ class HistorialMedico extends Model
     public function mascota(): BelongsTo
     {
         return $this->belongsTo(Mascot::class);
+    }
+
+    public function appointment(): BelongsTo
+    {
+        return $this->belongsTo(Appointment::class);
     }
 }
