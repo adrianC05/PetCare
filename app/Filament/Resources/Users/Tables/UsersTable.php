@@ -26,6 +26,10 @@ class UsersTable
                 TextColumn::make('email')
                     ->label('Correo Electrónico')
                     ->searchable(),
+                TextColumn::make('roles.name')
+                    ->label('Roles')
+                    ->badge()
+                    ->searchable(),
                 TextColumn::make('email_verified_at')
                     ->label('Verificado')
                     ->toggleable(isToggledHiddenByDefault: true)
