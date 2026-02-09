@@ -22,4 +22,9 @@ class Owner extends User
             $query->where('name', 'dueno_de_mascota');
         });
     }
+
+    public function mascots(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Mascot::class);
+    }
 }

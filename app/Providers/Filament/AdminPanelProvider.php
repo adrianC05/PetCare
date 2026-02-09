@@ -17,6 +17,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Filament\Navigation\NavigationItem;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -31,6 +32,10 @@ class AdminPanelProvider extends PanelProvider
             ->brandName('PetCare 🐶 ')
             ->colors([
                 'primary' => Color::Orange,
+            ])
+            ->navigationGroups([
+                'Gestión Clínica',
+                'Administración',
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
@@ -54,6 +59,13 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+            ])
+            ->navigationItems([
+            NavigationItem::make('Chat')
+                ->url(fn () => route('chatify'), shouldOpenInNewTab: true) // La ruta por defecto de Chatify
+                ->icon('heroicon-o-chat-bubble-left-right')
+                ->group('Comunicación') // Opcional: Agrégalo a un grupo
+                ->sort(10),
             ])
             //->plugin(FilamentSpatieRolesPermissionsPlugin::make())
             ->authMiddleware([

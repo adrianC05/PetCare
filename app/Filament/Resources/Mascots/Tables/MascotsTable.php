@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Mascots\Tables;
 
+use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
@@ -33,6 +35,7 @@ class MascotsTable
                 TextColumn::make('owner.name')
                     ->label('Dueño')
                     ->description(fn($record): string => $record->owner?->lastname ?? '')
+                    ->extraAttributes(attributes: ['style' => 'row-gap: 0 !important'])
                     ->sortable(),
 
                 // --- SOLUCIÓN WHATSAPP PARA FILAMENT V2 ---
@@ -52,9 +55,16 @@ class MascotsTable
                 //
             ])
             ->actions([
-                ViewAction::make(),
-                EditAction::make(),
-                DeleteAction::make(),
+                // Historial Médico
+                Action::make('historial')
+                    ->label('Historial Médico')
+                    ->icon('heroicon-m-clipboard-document-list') // Agregamos un icono bonito
+                    ->url(fn($record) => route('filament.admin.resources.mascots.edit', ['record' => $record->id])),
+                ActionGroup::make([
+                    ViewAction::make(),
+                    EditAction::make(),
+                    DeleteAction::make(),
+                ]),
             ])
             ->bulkActions([
                 //

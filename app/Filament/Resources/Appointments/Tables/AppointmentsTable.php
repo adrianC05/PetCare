@@ -10,6 +10,8 @@ use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Carbon\Carbon; // Importante para manejar fechas
+use Filament\Actions\ActionGroup;
+use Filament\Actions\DeleteAction;
 
 class AppointmentsTable
 {
@@ -44,12 +46,17 @@ class AppointmentsTable
                 // COLUMNA WHATSAPP
                 TextColumn::make('whatsapp_link')
                     ->label('Contacto')
-                    ->getStateUsing(function ($record) {
-                        $phone = $record->mascot->owner->phone ?? null;
-                        return $phone ? "WhatsApp ($phone)" : 'SIN TELÉFONO ❌';
-                    })
-                    ->color(fn($record) => $record->mascot?->owner?->phone ? 'success' : 'danger')
-                    ->url(fn($record) => self::getWhatsappUrl($record), true),
+                    ->extraAttributes(attributes: ['style' => 'row-gap: 0 !important'])
+
+                    // 1. Texto Principal (En negrita)
+                    ->getStateUsing(fn ($record) => $record->mascot->owner->phone ? 'WhatsApp' : 'SIN TELÉFONO ❌')
+                    
+                    // 2. Descripción (Texto gris pequeño debajo)
+                    ->description(fn ($record) => $record->mascot->owner->phone ?? 'No registrado')
+                    
+                    // 3. Color y URL (Se mantienen igual)
+                    ->color(fn ($record) => $record->mascot?->owner?->phone ? 'success' : 'danger')
+                    ->url(fn ($record) => self::getWhatsappUrl($record), true), // true = abrir en nueva pestaña
 
                 TextColumn::make('reason')
                     ->label('Motivo')
@@ -86,7 +93,10 @@ class AppointmentsTable
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                ActionGroup::make([
+                    EditAction::make(),
+                    DeleteAction::make(),
+                ]),            
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
