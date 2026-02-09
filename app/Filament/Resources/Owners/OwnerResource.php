@@ -18,6 +18,8 @@ use Filament\Tables\Table;
 
 class OwnerResource extends Resource
 {
+
+    
     protected static ?string $model = Owner::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
@@ -26,6 +28,7 @@ class OwnerResource extends Resource
     protected static ?string $navigationLabel = 'Dueños';
     protected static ?string $modelLabel = 'Dueño';
     protected static ?string $pluralModelLabel = 'Dueños';
+    
     public static function form(Schema $schema): Schema
     {
         return OwnerForm::configure($schema);
