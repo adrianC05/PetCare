@@ -1,18 +1,24 @@
 <?php
 
-namespace App\Filament\Resources\Users\Tables;
+namespace App\Filament\Resources\Owners\Tables;
 
+use App\Models\Owner;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Table;
+use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Builder;
 
-class UsersTable
+class OwnersTable
 {
     public static function configure(Table $table): Table
     {
+        $query = Owner::viewQuery();
         return $table
+            ->query($query)
             ->columns([
                 TextColumn::make('name')
                     ->label('Nombre')
@@ -25,10 +31,6 @@ class UsersTable
                     ->searchable(),
                 TextColumn::make('email')
                     ->label('Correo Electrónico')
-                    ->searchable(),
-                TextColumn::make('roles.name')
-                    ->label('Roles')
-                    ->badge()
                     ->searchable(),
                 TextColumn::make('email_verified_at')
                     ->label('Verificado')
@@ -50,7 +52,9 @@ class UsersTable
                 //
             ])
             ->recordActions([
+                //ViewAction::make(),
                 EditAction::make(),
+                DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

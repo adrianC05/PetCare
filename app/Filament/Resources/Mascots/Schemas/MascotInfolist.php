@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Mascots\Schemas;
 use Filament\Forms\Components\FileUpload;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
+use Filament\Infolists\Components\ImageEntry;
 
 class MascotInfolist
 {
@@ -26,11 +27,8 @@ class MascotInfolist
                     ->numeric(),
                 TextEntry::make('birthdate')
                     ->label('Fecha de Nacimiento'),
-                FileUpload::make('photo_path')
-                    ->label('Foto de la Mascota')
-                    ->image()
-                    ->directory('mascots/photos')
-                    ->maxSize(2048),
+                ImageEntry::make('photo_path')
+                    ->label('Foto de la Mascota'),
             ]);
     }
 }

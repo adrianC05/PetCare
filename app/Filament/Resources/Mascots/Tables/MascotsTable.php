@@ -2,6 +2,9 @@
 
 namespace App\Filament\Resources\Mascots\Tables;
 
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -48,10 +51,10 @@ class MascotsTable
             ->filters([
                 //
             ])
-            // DEJAMOS ACCIONES VACÍAS UN MOMENTO PARA QUE CARGUE LA TABLA
-            // Si esto funciona, luego agregamos Editar/Borrar
             ->actions([
-                //
+                ViewAction::make(),
+                EditAction::make(),
+                DeleteAction::make(),
             ])
             ->bulkActions([
                 //

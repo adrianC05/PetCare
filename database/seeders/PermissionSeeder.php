@@ -18,7 +18,7 @@ class PermissionSeeder extends Seeder
         $role = Role::firstOrCreate(['name' => 'super_admin']);
 
         // Recursos existentes
-        $resources = ['Role', 'Permission', 'User', 'Mascot', 'Appointment'];
+        $resources = ['Role', 'Permission', 'User', 'Mascot', 'Appointment', 'Owner'];
 
         // Acciones
         $actions = ['ViewAny', 'View', 'Create', 'Update', 'Delete', 'Restore', 'ForceDelete', 'ForceDeleteAny', 'RestoreAny', 'Replicate', 'Reorder'];

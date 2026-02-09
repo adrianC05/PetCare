@@ -1,0 +1,1 @@
+<?php echo e($livewireKey); ?>.actions<?php /**PATH C:\Users\gates\Herd\petcare\storage\framework\views/827c4ad40139b67ed81a965ae0e92d28.blade.php ENDPATH**/ ?>
