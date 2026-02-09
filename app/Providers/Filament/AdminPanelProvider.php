@@ -26,11 +26,10 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->spa()
             ->login()
-            // CAMBIO 1: Nombre de la veterinaria
             ->brandName('PetCare 🐶 ')
             ->colors([
-                // CAMBIO 2: Color Naranja Corporativo
                 'primary' => Color::Orange,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')

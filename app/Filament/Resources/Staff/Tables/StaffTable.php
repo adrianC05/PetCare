@@ -1,60 +1,62 @@
 <?php
 
-namespace App\Filament\Resources\Users\Tables;
+namespace App\Filament\Resources\Staff\Tables;
 
+use App\Models\Staff;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class UsersTable
+class StaffTable
 {
     public static function configure(Table $table): Table
     {
+        $query = Staff::viewQuery();
         return $table
+            ->query($query)
             ->columns([
                 TextColumn::make('name')
-                    ->label('Nombre')
                     ->searchable(),
                 TextColumn::make('lastname')
-                    ->label('Apellido')
-                    ->searchable(),
-                TextColumn::make('phone')
-                    ->label('Teléfono')
                     ->searchable(),
                 TextColumn::make('email')
-                    ->label('Correo Electrónico')
-                    ->searchable(),
+                ->label('Email address')
+                ->searchable(),
+                // Roles
                 TextColumn::make('roles.name')
                     ->label('Roles')
                     ->badge()
                     ->searchable(),
                 TextColumn::make('email_verified_at')
-                    ->label('Verificado')
-                    ->toggleable(isToggledHiddenByDefault: true)
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
-                    ->label('Creado')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->label('Actualizado')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('phone')
+                    ->searchable(),
             ])
             ->filters([
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()
+                ->hidden(fn ($record) => $record->hasRole('super_admin')),
+                DeleteAction::make()
+                ->hidden(fn ($record) => $record->hasRole('super_admin')),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    //DeleteBulkAction::make(),
                 ]),
             ]);
     }

@@ -23,7 +23,7 @@ class MascotResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'Mascot';
+    protected static ?string $recordTitleAttribute = 'name';
     protected static ?string $navigationLabel = 'Mascotas';
     protected static ?string $modelLabel = 'Mascota';
     protected static ?string $pluralModelLabel = 'Mascotas';

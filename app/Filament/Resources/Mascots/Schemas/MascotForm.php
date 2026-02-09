@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Mascots\Schemas;
 
+use App\Models\User;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -34,10 +35,15 @@ class MascotForm
                     ->label('Fecha de Nacimiento'),
                 Select::make('owner_id')
                     ->label('Dueño')
-                    ->relationship('owner', 'name')
+                    // Role filter to show only veterinarians                    
+                    ->options(function () {
+                        return User::whereHas('roles', function ($query) {
+                            $query->where('name', 'dueno_de_mascota');
+                        })->pluck('name', 'id');
+                    })
+                    ->required()
                     ->searchable()
-                    ->preload()
-                    ->required(),
+                    ->preload(),
                 FileUpload::make('photo_path')
                     ->label('Foto de la Mascota')
                     ->image()

@@ -23,13 +23,21 @@ class AppointmentForm
                     ->preload()
                     ->required(),
                 Select::make('veterinarian_id')
-                    ->relationship('veterinarian', 'name')
+                    // Role filter to show only veterinarians                    
+                    ->options(function () {
+                        return User::whereHas('roles', function ($query) {
+                            $query->where('name', 'veterinario');
+                        })->pluck('name', 'id');
+                    })
                     ->label('Veterinario')
                     ->required()
                     ->searchable()
                     ->preload(),
                 DateTimePicker::make('appointment_date')
                     ->label('Fecha y Hora de la Cita')
+                    ->timezone('America/Guayaquil')
+                    ->displayFormat('d/m/Y H:i')
+                    ->seconds(false)
                     ->required(),
                 TextInput::make('reason')
                     ->label('Motivo de la Cita')
