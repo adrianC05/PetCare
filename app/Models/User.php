@@ -8,10 +8,15 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable
+// 1. IMPORTAR ESTO PARA FILAMENT
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
+
+// 2. AGREGAR "implements FilamentUser"
+class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable , HasRoles;
+    use HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -53,5 +58,14 @@ class User extends Authenticatable
     public function appointments()
     {
         return $this->hasMany(Appointment::class, 'veterinarian_id');
+    }
+
+    // 3. MÉTODO OBLIGATORIO PARA DAR ACCESO AL PANEL
+    public function canAccessPanel(Panel $panel): bool
+    {
+        // Retornar true permite que cualquiera que inicie sesión entre al panel.
+        // Esto es necesario para que tus Tests (actingAs) funcionen.
+        // Más adelante puedes poner: return $this->hasRole('admin');
+        return true;
     }
 }

@@ -20,7 +20,7 @@ class UserSeeder extends Seeder
             'name' => 'Admin',
             'lastname' => 'User',
             'phone' => '123456789',
-            'password' => bcrypt('admin'), 
+            'password' => bcrypt(value: 'admin'),
         ]);
 
         $veterinario = User::firstOrCreate([
@@ -29,7 +29,7 @@ class UserSeeder extends Seeder
             'name' => 'Veterinarian',
             'lastname' => 'User',
             'phone' => '987654321',
-            'password' => bcrypt(value: 'veterinario'), 
+            'password' => bcrypt(value: 'veterinario'),
         ]);
 
         $dueno = User::firstOrCreate([
@@ -38,7 +38,7 @@ class UserSeeder extends Seeder
             'name' => 'Owner',
             'lastname' => 'User',
             'phone' => '555555555',
-            'password' => bcrypt(value: 'dueno'), 
+            'password' => bcrypt(value: 'dueno'),
         ]);
 
         // Asignar rol super_admin al usuario admin
