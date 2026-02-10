@@ -23,7 +23,7 @@ return [
             'pages' => true,
             'widgets' => true,
             'resources' => true,
-            'custom_permissions' => false,
+            'custom_permissions' => true,
         ],
     ],
 
@@ -172,27 +172,6 @@ return [
                 'update',
                 'delete',
             ],
-            \App\Filament\Resources\Mascots\MascotResource::class => [
-                'viewAny',
-                'view',
-                'create',
-                'update',
-                'delete',
-            ],
-            \App\Filament\Resources\Appointments\AppointmentResource::class => [
-                'viewAny',
-                'view',
-                'create',
-                'update',
-                'delete',
-            ],
-            \App\Filament\Resources\Users\UserResource::class => [
-                'viewAny',
-                'view',
-                'create',
-                'update',
-                'delete',
-            ],
         ],
         'exclude' => [
             //
@@ -249,8 +228,14 @@ return [
     |
     */
 
-    'custom_permissions' => [],
-
+    'custom_permissions' => [
+        'view_calendar_widget' => 'Ver Widget de Calendario',
+        'view_all_calendar_appointments' => 'Ver TODAS las Citas en Calendario',
+        'view_own_calendar_appointments' => 'Ver SOLO SUS Citas en Calendario',
+        'create_calendar_appointments' => 'Crear Citas desde Calendario',
+        'edit_calendar_appointments' => 'Editar Citas desde Calendario',
+],
+    
     /*
     |--------------------------------------------------------------------------
     | Entity Discovery

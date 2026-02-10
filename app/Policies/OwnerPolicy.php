@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use App\Models\Owner;
 
 class OwnerPolicy
 {
@@ -25,12 +24,12 @@ class OwnerPolicy
         return $authUser->can('Create:Owner');
     }
 
-    public function update(AuthUser $authUser, Owner $owner): bool
+    public function update(AuthUser $authUser): bool
     {
         return $authUser->can('Update:Owner');
     }
 
-    public function delete(AuthUser $authUser, Owner $owner): bool
+    public function delete(AuthUser $authUser): bool
     {
         return $authUser->can('Delete:Owner');
     }
