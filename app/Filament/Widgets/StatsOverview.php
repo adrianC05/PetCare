@@ -13,6 +13,11 @@ class StatsOverview extends BaseWidget
 {
     protected ?string $pollingInterval = '15s';
 
+    public static function canView(): bool
+    {
+        return auth()->user()?->can('View:StatsOverview');
+    }
+
     protected function getStats(): array
     {
         // Lógica para obtener el crecimiento de citas en los últimos 7 días

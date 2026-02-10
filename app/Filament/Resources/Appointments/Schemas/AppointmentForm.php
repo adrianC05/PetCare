@@ -11,89 +11,86 @@ use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
 
+use Filament\Schemas\Components\Grid as ComponentsGrid;
+use Filament\Schemas\Components\Section as ComponentsSection;
 class AppointmentForm
 {
-    public static function configure(Schema $schema): Schema
-    {
-        return $schema
-            ->components([
-                Select::make('mascot_id')
-                    ->label('Mascota')
-                    ->required()
-                    ->searchable()
-                    ->preload()
-                    // 1. Opciones iniciales (cuando abres la lista sin escribir nada)
-                    ->options(function () {
-                        return Mascot::with('owner')
-                            ->limit(50)
-                            ->get()
-                            ->mapWithKeys(function ($mascot) {
-                                $ownerName = $mascot->owner ? "{$mascot->owner->name} {$mascot->owner->lastname}" : 'Sin Dueño';
-                                return [$mascot->id => "{$mascot->name} - {$ownerName}"];
-                            });
-                    })
-                    // 2. Lógica de Búsqueda (Aquí agregamos el Lastname)
-                    ->getSearchResultsUsing(function (string $search) {
-                        return Mascot::query()
-                            ->with('owner')
-                            // A. Buscar por nombre de la mascota
-                            ->where('name', 'like', "%{$search}%") 
-                            // B. O buscar dentro del dueño...
-                            ->orWhereHas('owner', function (Builder $query) use ($search) {
-                                $query->where('name', 'like', "%{$search}%")      // ...por Nombre
-                                    ->orWhere('lastname', 'like', "%{$search}%"); // ...O por Apellido
-                            })
-                            ->limit(50)
-                            ->get()
-                            ->mapWithKeys(function ($mascot) {
-                                $ownerName = $mascot->owner ? "{$mascot->owner->name} {$mascot->owner->lastname}" : 'Sin Dueño';
-                                return [$mascot->id => "{$mascot->name} - {$ownerName}"];
-                            });
-                    })
-                    // 3. Mostrar la etiqueta correctamente al editar un registro existente
-                    ->getOptionLabelUsing(function ($value): ?string {
-                        $mascot = Mascot::with('owner')->find($value);
-                        if (!$mascot) return null;
-                        
-                        $ownerName = $mascot->owner ? "{$mascot->owner->name} {$mascot->owner->lastname}" : 'Sin Dueño';
-                        return "{$mascot->name} - {$ownerName}";
-                    }),
-                Select::make('veterinarian_id')
-                    // Role filter to show only veterinarians                    
-                    ->options(function () {
-                        return User::whereHas('roles', function ($query) {
-                            $query->where('name', 'veterinario');
-                        })->pluck('name', 'id');
-                    })
-                    ->label('Veterinario')
-                    ->required()
-                    ->searchable()
-                    ->preload(),
-                DateTimePicker::make('appointment_date')
-                    ->label('Fecha y Hora de la Cita')
-                    ->timezone('America/Guayaquil')
-                    ->displayFormat('d/m/Y H:i')
-                    ->seconds(false)
-                    ->required(),
-                TextInput::make('reason')
-                    ->label('Motivo de la Cita')
-                    ->required(),
-                Select::make('status')
-                    ->label('Estado')
-                    ->required()
-                    ->options([
-                        'pending' => 'Pendiente',
-                        'confirmed' => 'Confirmada',
-                    ])
-                    ->default('pending'),
-                Textarea::make('notes')
-                    ->label('Notas')
-                    ->columnSpanFull(),
-                TextInput::make('duration')
-                    ->label('Duración (minutos)')
-                    ->required()
-                    ->numeric()
-                    ->default(30),
-            ]);
-    }
+ public static function configure(Schema $schema): Schema
+{
+    return $schema
+        ->columns(3) // 👈 AGREGAR ESTO - Define las columnas del contenedor principal
+        ->components([
+            ComponentsSection::make('Información de la Cita')
+                ->description('Detalles del paciente y motivo de consulta.')
+                ->icon('heroicon-m-clipboard-document-list')
+                ->columnSpan(2) // Ocupa 2 de las 3 columnas
+                ->schema([
+                    ComponentsGrid::make(2)->schema([
+                        Select::make('mascot_id')
+                            ->label('Mascota')
+                            ->relationship('mascot', 'name')
+                            ->getOptionLabelFromRecordUsing(fn (Mascot $record) => "{$record->name} - " . ($record->owner ? "{$record->owner->name} {$record->owner->lastname}" : 'Sin Dueño'))
+                            ->searchable(['name', 'owner.name', 'owner.lastname'])
+                            ->preload()
+                            ->required()
+                            ->prefixIcon('heroicon-m-heart'),
+
+                        Select::make('veterinarian_id')
+                            ->label('Veterinario')
+                            ->relationship('veterinarian', 'name', fn (Builder $query) => 
+                                $query->whereHas('roles', fn($q) => $q->where('name', 'veterinario'))
+                            )
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->prefixIcon('heroicon-m-user-circle'),
+                    ]),
+
+                    TextInput::make('reason')
+                        ->label('Motivo de la Cita')
+                        ->placeholder('Ej: Control post-operatorio')
+                        ->required()
+                        ->maxLength(255)
+                        ->columnSpanFull(),
+
+                    Textarea::make('notes')
+                        ->label('Notas Adicionales')
+                        ->rows(5)
+                        ->placeholder('Observaciones importantes...')
+                        ->columnSpanFull(),
+                ]),
+
+            ComponentsSection::make('Programación')
+                ->description('Control de tiempo y estado.')
+                ->icon('heroicon-m-clock')
+                ->columnSpan(1) // Ocupa 1 de las 3 columnas
+                ->schema([
+                    DateTimePicker::make('appointment_date')
+                        ->label('Fecha y Hora')
+                        ->timezone('America/Guayaquil')
+                        ->displayFormat('d/m/Y H:i')
+                        ->native(false)
+                        ->required()
+                        ->prefixIcon('heroicon-m-calendar'),
+
+                    Select::make('status')
+                        ->label('Estado Actual')
+                        ->options([
+                            'pending' => 'Pendiente',
+                            'confirmed' => 'Confirmada',
+                        ])
+                        ->default('pending')
+                        ->required()
+                        ->native(false),
+
+                    TextInput::make('duration')
+                        ->label('Duración Estimada')
+                        ->suffix('minutos')
+                        ->numeric()
+                        ->default(30)
+                        ->required()
+                        ->prefixIcon('heroicon-m-clock'),
+                ]),
+        ]);
+}
 }

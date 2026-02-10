@@ -5,8 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Guava\Calendar\ValueObjects\CalendarEvent;
+use Guava\Calendar\Contracts\Eventable;
 
-class Appointment extends Model
+class Appointment extends Model implements Eventable
 {
     use HasFactory;
 
@@ -39,5 +41,27 @@ class Appointment extends Model
     {
         // HasOne porque una cita solo genera UN historial
         return $this->hasOne(HistorialMedico::class); 
+    }
+
+    public function toCalendarEvent(): CalendarEvent
+    {
+        return CalendarEvent::make($this)
+            ->title(($this->mascot?->name ?? 'Sin mascota') . ' - ' . ($this->reason ?? 'Cita'))
+            ->start($this->appointment_date)
+            ->end($this->appointment_date->addMinutes($this->duration ?? 30))
+            ->backgroundColor($this->getStatusColor())
+            ->textColor('#FFFFFF')
+            ->action('view');
+    }
+
+    private function getStatusColor(): string
+    {
+        return match($this->status ?? 'pending') {
+            'pending' => '#FFA500',
+            'confirmed' => '#4CAF50',
+            'completed' => '#2196F3',
+            'cancelled' => '#F44336',
+            default => '#9E9E9E',
+        };
     }
 }
