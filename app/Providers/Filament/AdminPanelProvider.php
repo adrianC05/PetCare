@@ -45,6 +45,7 @@ class AdminPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             // CAMBIO 3: Dejamos esto VACÍO para quitar lo de GitHub y Welcome
             ->widgets([
+                \App\Filament\Widgets\CalendarWidget::class, 
                 //Widgets\AccountWidget::class,
                 // Widgets\FilamentInfoWidget::class,
             ])
