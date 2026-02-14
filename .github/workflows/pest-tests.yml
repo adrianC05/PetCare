@@ -1,0 +1,51 @@
+name: PetCare CI - Pruebas
+
+# 1. ¿Cuándo se ejecutará esto?
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  test:
+    # 2. ¿En qué sistema operativo correrá?
+    runs-on: ubuntu-latest
+
+    steps:
+    # 3. Descargar tu código desde GitHub al servidor virtual
+    - name: 📥 Checkout del código
+      uses: actions/checkout@v4
+
+    # 4. Instalar PHP (Asumiendo que usas PHP 8.2 o superior)
+    - name: 🐘 Configurar PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2' 
+        extensions: mbstring, dom, fileinfo, sqlite3
+        coverage: none
+
+    # 5. Preparar el entorno de Laravel
+    - name: ⚙️ Preparar archivo .env
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+
+    # 6. Instalar las dependencias de Composer (vendor)
+    - name: 📦 Instalar Dependencias (Composer)
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+    # 7. Generar la clave de la aplicación
+    - name: 🔑 Generar App Key
+      run: php artisan key:generate
+
+    # 8. Crear una base de datos SQLite en memoria para las pruebas
+    - name: 🗄️ Crear base de datos para tests
+      run: |
+        mkdir -p database
+        touch database/database.sqlite
+      env:
+        DB_CONNECTION: sqlite
+        DB_DATABASE: database/database.sqlite
+
+    # 9. ¡El momento de la verdad! Ejecutar los tests que arreglamos antes
+    - name: 🧪 Ejecutar pruebas con Pest
+      run: php artisan test
