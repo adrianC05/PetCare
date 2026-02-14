@@ -31,7 +31,7 @@ jobs:
 
     # 6. Instalar las dependencias de Composer (vendor)
     - name: 📦 Instalar Dependencias (Composer)
-      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+      run: composer update -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
     # 7. Generar la clave de la aplicación
     - name: 🔑 Generar App Key
